@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">Driving Timer</string>
+
+    <string name="title_activity_scrolling">Your drives</string>
+    <string name="hint_email_login">Email address</string>
+    <string name="hint_password_login">Password</string>
+    <string name="register_button">Register</string>
+    <string name="drive_importer">Drive importer</string>
+    <string name="date_of_drive">Date</string>
+    <string name="time_of_drive">Time</string>
+    <string name="length_of_drive">Length</string>
+    <string name="upload_drive">Upload drive</string>
+</resources>
