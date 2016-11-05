@@ -66,8 +66,6 @@ public class CardViewDelete implements View.OnLongClickListener {
                     drives = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, ArrayList<Long>>>() {
                     });
 
-                    //List<Long> deletedList = drives.get(Date);
-
                     mRef.child(Date).setValue(null).addOnSuccessListener(new OnSuccessListener<Void>() {
                         @Override
                         public void onSuccess(Void aVoid) {

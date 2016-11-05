@@ -15,6 +15,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     final static String PREF_KEY = "DRIVE_PREF_KEY";
 
-    static HashMap<String, ArrayList<Long>> drives;
+    static HashMap<String, ArrayList<Integer>> drives;
 
     public enum TabNames {
         TIMER,
@@ -63,6 +64,8 @@ public class MainActivity extends AppCompatActivity {
         pref = getSharedPreferences(PREF_KEY, MODE_PRIVATE);
 
         mAuth = FirebaseAuth.getInstance();
+
+        FirebaseCrash.report(new Exception("My first Android non-fatal error"));
 
         fm = getSupportFragmentManager();
 
@@ -108,7 +111,9 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(AuthResult authResult) {
                     Log.d(TAG, "Logged in!");
 
-                    mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    database.setPersistenceEnabled(true);
+                    mDatabase = database.getReferenceFromUrl("https://drives-timer.firebaseio.com/");
 
                     mUser = mAuth.getCurrentUser();
 
@@ -117,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                     mDatabase.child(uid).child("drives").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            drives = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, ArrayList<Long>>>() {
+                            drives = dataSnapshot.getValue(new GenericTypeIndicator<HashMap<String, ArrayList<Integer>>>() {
                             });
                         }
 

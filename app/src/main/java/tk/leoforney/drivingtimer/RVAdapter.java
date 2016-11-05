@@ -43,16 +43,14 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DriveViewHolder> i
 
     //List<Drive> drives;
 
-    ArrayList<ArrayList<Long>> drives;
-    String[] DateArray;
+    ArrayList<Drive> drives;
 
     String TimeLength;
 
     CoordinatorLayout coordinatorLayout;
 
-    RVAdapter(ArrayList<ArrayList<Long>> drives, String[] dates, CoordinatorLayout coordinatorLayout) {
+    RVAdapter(ArrayList<Drive> drives, CoordinatorLayout coordinatorLayout) {
         this.drives = drives;
-        this.DateArray = dates;
         this.coordinatorLayout = coordinatorLayout;
     }
 
@@ -70,17 +68,11 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DriveViewHolder> i
 
     @Override
     public void onBindViewHolder(DriveViewHolder driveViewHolder, int i) {
-        //String Date = drives.get(i).Date;
-        String Date = DateArray[i];
-        driveViewHolder.DateTextView.setText(Date);
-        //Drive drive = drives.get(i);
-        List<Long> drive = drives.get(i);
-        long Hours = drive.get(0);
-        String HoursString = Long.toString(Hours);
-        long Minutes = drive.get(1);
-        String MinutesString = Long.toString(Minutes);
-        long Seconds = drive.get(2);
-        String SecondsString = Long.toString(Seconds);
+        Drive drive = drives.get(i);
+        driveViewHolder.DateTextView.setText(drive.Date);
+        String HoursString = Long.toString(drive.Hours);
+        String MinutesString = Long.toString(drive.Minutes);
+        String SecondsString = Long.toString(drive.Seconds);
 
         TimeLength = HoursString + " h, " + MinutesString + " m, " + SecondsString + " s";
         Log.d("RVAdapter", TimeLength);
@@ -88,7 +80,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DriveViewHolder> i
         driveViewHolder.LengthTextView.setText(TimeLength);
 
         CardViewDelete cardviewDelete = new CardViewDelete(coordinatorLayout);
-        cardviewDelete.setDate(Date);
+        cardviewDelete.setDate(drive.Date);
 
         driveViewHolder.cardView.setOnLongClickListener(cardviewDelete);
 

@@ -31,25 +31,21 @@ public class MyDrivesFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    static RecyclerView recycler;
+    RecyclerView recycler;
 
     static String TAG;
 
-    static CoordinatorLayout coordinatorLayout;
+    CoordinatorLayout coordinatorLayout;
 
-    static TextView totalTextView;
+    TextView totalTextView;
 
     static SharedPreferences pref;
 
-    static HashMap<String, ArrayList<Long>> drives;
+    static HashMap<String, ArrayList<Integer>> drives;
 
     final static String PREF_KEY = "DRIVE_PREF_KEY";
 
-    static long TotalSeconds;
 
-    static long THours;
-    static long TMinutes;
-    static long TSeconds;
 
     public MyDrivesFragment() {
         // Required empty public constructor
@@ -91,77 +87,62 @@ public class MyDrivesFragment extends Fragment {
         MainActivity.mAuth.addAuthStateListener(new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
+                final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
 
-                    DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
+                    final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
 
                     mDatabase.child(user.getUid()).child("drives").addValueEventListener(new ValueEventListener() {
                         @Override
                         public void onDataChange(DataSnapshot dataSnapshot) {
-                            ArrayList<ArrayList<Long>> drivesList = null;
-                            String[] datesArray = new String[0];
+                            ArrayList<Drive> drivesList = null;
                             drives = MainActivity.drives;
 
                             if (drives != null) {
+
+                                String totalTime = getTotalTimeStringFromDatabase(mDatabase, user);
                                 NoDrivesSnackbar.dismiss();
                                 totalTextView.setVisibility(View.VISIBLE);
 
                                 drivesList = new ArrayList<>(drives.size());
-                                datesArray = new String[drives.size()];
 
-                                TotalSeconds = 0;
+                                if (drives.size() > 0) {
+                                    for (int i = 0; i < drives.size(); i++) {
+                                        String Key = String.valueOf(drives.keySet().toArray()[i]);
 
-                                for (int i = 0; i < drives.size(); i++) {
-                                    Object Key = drives.keySet().toArray()[i];
-
-                                    ArrayList<Long> timeList = new ArrayList<>(3);
-
-                                    long Hours = drives.get(Key).get(0);
-                                    long Minutes = drives.get(Key).get(1);
-                                    long Seconds = drives.get(Key).get(2);
-
-                                    Log.d(TAG, "H: " + String.valueOf(Hours) + ", M: " + String.valueOf(Minutes) + ", S: " + Seconds);
-
-                                    TotalSeconds += Seconds;
-                                    TotalSeconds += Minutes * 60;
-                                    TotalSeconds += Hours * 3600;
-
-                                    timeList.add(0, Hours);
-                                    timeList.add(1, Minutes);
-                                    timeList.add(2, Seconds);
-
-                                    drivesList.add(i, timeList);
-
-                                    datesArray[i] = Key.toString();
-
+                                        int Hours = drives.get(Key).get(0);
+                                        int Minutes = drives.get(Key).get(1);
+                                        int Seconds = drives.get(Key).get(2);
+                                        drivesList.add(new Drive(Key, Hours, Minutes, Seconds));
+                                    }
                                 }
 
-                                THours = TotalSeconds / 3600;
-                                TMinutes = (TotalSeconds % 3600) / 60;
-                                TSeconds = TotalSeconds % 60;
+                                if (totalTime != null) {
+                                    totalTextView.setText(compileTotalTimeString());
+                                } else {
+                                    totalTextView.setText(totalTime);
+                                }
+
+                                mDatabase.child(user.getUid()).child("totaltime").setValue(compileTotalTimeString());
 
                                 if (drivesList.size() == 0) {
                                     totalTextView.setVisibility(View.GONE);
                                     NoDrivesSnackbar.show();
                                 } else {
                                     totalTextView.setVisibility(View.VISIBLE);
-
-                                    RVAdapter adapter = new RVAdapter(drivesList, datesArray, coordinatorLayout);
-                                    recycler.setAdapter(adapter);
-                                    adapter.notifyDataSetChanged();
                                 }
 
+                                totalTextView.setText(compileTotalTimeString());
+
+                            } else {
+                                NoDrivesSnackbar.show();
                             }
 
-                            RVAdapter adapter = new RVAdapter(drivesList, datesArray, coordinatorLayout);
+                            RVAdapter adapter = new RVAdapter(drivesList, coordinatorLayout);
                             recycler.setAdapter(adapter);
                             adapter.notifyDataSetChanged();
 
-                            totalTextView.setText("Total: " +
-                                    Long.toString(THours) + " h, " +
-                                    Long.toString(TMinutes) + " m, " +
-                                    Long.toString(TSeconds) + " s");
+
 
                         }
 
@@ -179,6 +160,52 @@ public class MyDrivesFragment extends Fragment {
         });
 
 
+    }
+    String totalTime;
+
+    String getTotalTimeStringFromDatabase(DatabaseReference reference, FirebaseUser user) {
+        reference.child(user.getUid()).child("totaltime").addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                totalTime = String.valueOf(dataSnapshot.getValue());
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        return totalTime;
+    }
+
+
+
+    String compileTotalTimeString() {
+        int TotalSeconds = 0;
+        int THours = 0;
+        int TMinutes = 0;
+        int TSeconds = 0;
+        for (int i = 0; i < drives.size(); i++) {
+            Object Key = drives.keySet().toArray()[i];
+
+            int Hours = drives.get(Key).get(0);
+            int Minutes = drives.get(Key).get(1);
+            int Seconds = drives.get(Key).get(2);
+
+            TotalSeconds += Seconds;
+            TotalSeconds += Minutes * 60;
+            TotalSeconds += Hours * 3600;
+        }
+
+        THours = TotalSeconds / 3600;
+        TMinutes = (TotalSeconds % 3600) / 60;
+        TSeconds = TotalSeconds % 60;
+
+        return "Total: " +
+                Long.toString(THours) + " h, " +
+                Long.toString(TMinutes) + " m, " +
+                Long.toString(TSeconds) + " s";
     }
 
 
