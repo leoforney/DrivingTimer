@@ -8,12 +8,12 @@ android {
         applicationId "tk.leoforney.drivingtimer"
         minSdkVersion 17
         targetSdkVersion 23
-        versionCode 3
-        versionName "1.2"
+        versionCode 5
+        versionName "1.2.2"
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }

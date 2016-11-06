@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
 
         mAuth = FirebaseAuth.getInstance();
 
-        FirebaseCrash.report(new Exception("My first Android non-fatal error"));
-
         fm = getSupportFragmentManager();
 
         mBottomBar = BottomBar.attach(this, savedInstanceState);
