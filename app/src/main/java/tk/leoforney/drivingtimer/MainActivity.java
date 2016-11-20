@@ -110,7 +110,10 @@ public class MainActivity extends AppCompatActivity {
                     Log.d(TAG, "Logged in!");
 
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    database.setPersistenceEnabled(true);
+                    if (database != null) {
+                        database.setPersistenceEnabled(true);
+                    }
+
                     mDatabase = database.getReferenceFromUrl("https://drives-timer.firebaseio.com/");
 
                     mUser = mAuth.getCurrentUser();
