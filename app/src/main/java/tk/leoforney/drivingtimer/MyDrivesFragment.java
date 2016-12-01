@@ -90,7 +90,7 @@ public class MyDrivesFragment extends Fragment {
                 final FirebaseUser user = firebaseAuth.getCurrentUser();
                 if (user != null) {
 
-                    final DatabaseReference mDatabase = FirebaseDatabase.getInstance().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
+                    final DatabaseReference mDatabase = MainActivity.getDatabase().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
 
                     mDatabase.child(user.getUid()).child("drives").addValueEventListener(new ValueEventListener() {
                         @Override

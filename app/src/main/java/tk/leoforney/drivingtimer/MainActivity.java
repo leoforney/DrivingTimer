@@ -35,6 +35,7 @@ public class MainActivity extends AppCompatActivity {
     static protected FirebaseAuth mAuth;
     static protected DatabaseReference mDatabase;
     static protected FirebaseUser mUser;
+    static protected FirebaseDatabase firebaseDatabase;
 
     static protected String uid = null;
 
@@ -109,12 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onSuccess(AuthResult authResult) {
                     Log.d(TAG, "Logged in!");
 
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    if (database != null) {
-                        database.setPersistenceEnabled(true);
-                    }
-
-                    mDatabase = database.getReferenceFromUrl("https://drives-timer.firebaseio.com/");
+                    mDatabase = getDatabase().getReferenceFromUrl("https://drives-timer.firebaseio.com/");
 
                     mUser = mAuth.getCurrentUser();
 
@@ -168,6 +164,14 @@ public class MainActivity extends AppCompatActivity {
             returnValue = mDatabase.child(uid).child("drives").child(date).setValue(TimeArrayList);
         }
         return returnValue;
+    }
+
+    public static FirebaseDatabase getDatabase() {
+        if (firebaseDatabase == null) {
+            firebaseDatabase = FirebaseDatabase.getInstance();
+            firebaseDatabase.setPersistenceEnabled(true);
+        }
+        return firebaseDatabase;
     }
 
 
