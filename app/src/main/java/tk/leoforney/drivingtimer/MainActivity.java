@@ -15,7 +15,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.crash.FirebaseCrash;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -27,6 +26,7 @@ import com.roughike.bottombar.OnMenuTabClickListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -157,11 +157,15 @@ public class MainActivity extends AppCompatActivity {
         transaction.commit();
     }
 
-    public static Task<Void> addDrive(String date, ArrayList<Long> TimeArrayList) {
+    public static Task<Void> addDrive(Drive drive) {
         Log.d(TAG, "Drive attempted to be added!");
+        List<Integer> TimeArrayList = new ArrayList<>(3);
+        TimeArrayList.add(0, drive.Hours);
+        TimeArrayList.add(1, drive.Minutes);
+        TimeArrayList.add(2, drive.Seconds);
         Task<Void> returnValue = null;
         if (mDatabase != null) {
-            returnValue = mDatabase.child(uid).child("drives").child(date).setValue(TimeArrayList);
+            returnValue = mDatabase.child(uid).child("drives").child(drive.Date).setValue(TimeArrayList);
         }
         return returnValue;
     }

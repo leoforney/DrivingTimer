@@ -75,7 +75,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.DriveViewHolder> i
         String SecondsString = Long.toString(drive.Seconds);
 
         TimeLength = HoursString + " h, " + MinutesString + " m, " + SecondsString + " s";
-        Log.d("RVAdapter", TimeLength);
 
         driveViewHolder.LengthTextView.setText(TimeLength);
 
